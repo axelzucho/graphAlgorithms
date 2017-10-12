@@ -218,17 +218,18 @@ vector<vector<int>> floydWarshall(DirectedGraph g){
                 distances[*it].push_back(0);
                 continue;
             }
-            else distances[*it].push_back(INT_MAX);
+            else distances[*it].push_back(100000);
         }
     }
     pair<e_it,e_it> edIt = edges(g);
     for(e_it it = edIt.first; it != edIt.second; ++it){
         distances[boost::source(*it,g)][boost::target(*it,g)] = boost::get(boost::edge_weight_t(),g, *it);
     }
-    for(int i = 0; i < vNum; ++i){
-        for(int j = 0; j < vNum; ++j){
-            for(int k = 0; k < vNum; ++k){
-                
+    for(int k = 0; k < vNum; ++k){
+        for(int i = 0; i < vNum; ++i){
+            for(int j = 0; j < vNum; ++j){
+                if(distances[i][j] > distances[i][k] + distances[k][j])
+                    distances[i][j] = distances[i][k] + distances[k][j];
             }
         }
     }
