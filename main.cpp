@@ -6,6 +6,7 @@
 #include <boost/graph/detail/adjacency_list.hpp>
 #include <tuple>
 #include <boost/graph/prim_minimum_spanning_tree.hpp>
+#include <chrono>
 
 typedef boost::property<boost::edge_weight_t, int> EdgeWeightProperty;
 typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, boost::no_property, EdgeWeightProperty > DirectedGraph;
@@ -15,10 +16,11 @@ typedef boost::graph_traits<DirectedGraph>::vertex_iterator v_it;
 typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
 typedef boost::graph_traits<DirectedGraph>::edge_descriptor Edge;
 
-DirectedGraph g;
+DirectedGraph g, f;
 
 using namespace std;
 using namespace boost;
+using namespace chrono;
 struct oper{
     bool operator()(const std::tuple<int,Vertex, Vertex>& one, const std::tuple<int,Vertex, Vertex>& two)
     {
@@ -34,6 +36,11 @@ struct oper2{
 
 void insertVertex(DirectedGraph a){
     add_vertex(a);
+}
+
+void insertEdgeUndirected(unsigned long s, unsigned long d, int w, DirectedGraph &a){
+    add_edge(s,d,w,a);
+    add_edge(d,s,w,a);
 }
 
 void insertEdge(unsigned long s, unsigned long d, int w, DirectedGraph &a){
@@ -225,6 +232,7 @@ vector<vector<int>> floydWarshall(DirectedGraph g){
     for(e_it it = edIt.first; it != edIt.second; ++it){
         distances[boost::source(*it,g)][boost::target(*it,g)] = boost::get(boost::edge_weight_t(),g, *it);
     }
+    
     for(int k = 0; k < vNum; ++k){
         for(int i = 0; i < vNum; ++i){
             for(int j = 0; j < vNum; ++j){
@@ -240,7 +248,6 @@ vector<vector<int>> floydWarshall(DirectedGraph g){
 
 int main()
 {
-
     insertEdge(1, 3, 8, g);
     insertEdge(1, 4, 8, g);
     insertEdge(3, 2, 7, g);
@@ -265,29 +272,77 @@ int main()
     insertEdge(12, 14, 9, g);
     insertEdge(13, 14, 6, g);
     insertEdge(14, 13, 12, g);
-    vector<vector<int>> a = floydWarshall(g);
-    /*
-    property_map<DirectedGraph, edge_weight_t>::type weightmap = get(edge_weight, g);
-    std::vector < graph_traits < DirectedGraph >::vertex_descriptor >
-            p(num_vertices(g));
-    prim_minimum_spanning_tree(g, &p[0]);
-    for (std::size_t i = 0; i != p.size(); ++i)
-        if (p[i] != i)
-            std::cout << "parent[" << i << "] = " << p[i] << std::endl;
-        else
-            std::cout << "parent[" << i << "] = no parent" << std::endl;*/
 
+    cout << "Inserting vertex:\n";
+    auto t1_a = high_resolution_clock::now();
+    insertVertex(g);
+    auto t2_a = high_resolution_clock::now();
+    auto duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
+    cout << "Inserting edge:\n";
+    t1_a = high_resolution_clock::now();
+    insertEdge(1,5,3,g);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
+    cout << "Deleting vertex:\n";
+    t1_a = high_resolution_clock::now();
+    deleteVertex(15,g);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
+    cout << "Deleting edge:\n";
+    t1_a = high_resolution_clock::now();
+    deleteEdge(1,5,g);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
 /*
-    std::pair<edge_iterator, edge_iterator> ei = edges(g);
+    cout << "DFS:\n";
+    auto t1_a = high_resolution_clock::now();
+    dfs(g, 1);
+    auto t2_a = high_resolution_clock::now();
+    auto duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
 
-    std::cout << "Number of edges = " << num_edges(g) << "\n";
-    std::cout << "Edge list:\n";
+    cout << "BFS:\n";
+    t1_a = high_resolution_clock::now();
+    bfs(g, 1);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
 
-    std::copy( ei.first, ei.second,
-               std::ostream_iterator<boost::adjacency_list<>::edge_descriptor>{
-                       std::cout, "\n"});
+    cout << "Prim:\n";
+    t1_a = high_resolution_clock::now();
+    prim(g, 1);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
 
-    std::cout << std::endl;
+    cout << "Kruskal:\n";
+    t1_a = high_resolution_clock::now();
+    kruskal(g);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
+    cout << "Dijkstra:\n";
+    t1_a = high_resolution_clock::now();
+    dijkstra(g,1);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
+    cout << "Floyd-Warshall:\n";
+    t1_a = high_resolution_clock::now();
+    floydWarshall(g);
+    t2_a = high_resolution_clock::now();
+    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
+    cout << "Duration = " << duration_a << " micros\n";
+
 */
     return 0;
 }
