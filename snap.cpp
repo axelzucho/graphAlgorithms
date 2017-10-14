@@ -21,21 +21,21 @@ struct oper{
 };
 
 
-void insertVertex(int value, PNGraph * g) {
-    g->AddNode(value);
+void insertVertex(int value, PNGraph  &g) {
+    g.AddNode(value);
 }
 
-void insertEdge(int a, int b, int weight, PNGraph * g) {
-    g->AddEdge(a,b);
+void insertEdge(int a, int b, int weight, PNGraph &g) {
+    g.AddEdge(a,b);
     TNEANet::TEdgeI EI = g->GetEI(a,b);
-    g->AddIntAttrDatE(EI, weight, "weight");
+    g.AddIntAttrDatE(EI, weight, "weight");
 }
 
-void deleteVertex(int value, PNGraph * g) {
+void deleteVertex(int value, PNGraph &g) {
     g->DelNode(value);
 }
 
-void deleteEdge(int a, int b, PNGraph * g) {
+void deleteEdge(int a, int b, PNGraph &g) {
     g->DelEdge(a,b);
 }
 
