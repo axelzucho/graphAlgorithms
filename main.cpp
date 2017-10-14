@@ -60,6 +60,7 @@ void dfs(DirectedGraph &a, unsigned long startingNode){
     map<Vertex,bool> travelled;
     Vertex checking = a.vertex_set()[startingNode];
     visiting.push(checking);
+    travelled[checking] = true;
     while(!visiting.empty()){
         checking = visiting.top();
         visiting.pop();
@@ -81,6 +82,7 @@ void bfs(DirectedGraph &a, unsigned long startingNode){
     map<Vertex,bool> travelled;
     Vertex checking = a.vertex_set()[startingNode];
     visiting.push(checking);
+    travelled[checking] = true;
     while(!visiting.empty()){
         checking = visiting.front();
         visiting.pop();
@@ -246,8 +248,9 @@ vector<vector<int>> floydWarshall(DirectedGraph g){
 
 }
 
-int main()
+int main() //Example Program
 {
+    //Here we are inserting the edges of the graph provided
     insertEdge(1, 3, 8, g);
     insertEdge(1, 4, 8, g);
     insertEdge(3, 2, 7, g);
@@ -272,77 +275,23 @@ int main()
     insertEdge(12, 14, 9, g);
     insertEdge(13, 14, 6, g);
     insertEdge(14, 13, 12, g);
+    /*
+    insertVertex(g); //Here we insert a vertex
+    insertEdge(1,5,3,g); //Here we insert an edge from vertex 1 to 5 with weight 3
+    deleteVertex(15,g); //Here we delete the vertex 15
+    deleteEdge(1,5,g); //Here we delete the edge going from Vertex 1 to 5.
+    */
+    dfs(g, 1); //Here we do a depth-first search, that will print the path
 
-    cout << "Inserting vertex:\n";
-    auto t1_a = high_resolution_clock::now();
-    insertVertex(g);
-    auto t2_a = high_resolution_clock::now();
-    auto duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
+    bfs(g, 1); //Here we do a breath-first search, that will print the path
 
-    cout << "Inserting edge:\n";
-    t1_a = high_resolution_clock::now();
-    insertEdge(1,5,3,g);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
+    vector<pair<Vertex, int>> Prim = prim(g, 1); //Here we get a vector of pairs, telling us the minimum spanning tree according to prim
 
-    cout << "Deleting vertex:\n";
-    t1_a = high_resolution_clock::now();
-    deleteVertex(15,g);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
+    vector<std::tuple<Vertex, Vertex, int>> Kruskal = kruskal(g); //Here we get a tuple of vertex and int, telling us the minimum spanning tree according to kruskal
 
-    cout << "Deleting edge:\n";
-    t1_a = high_resolution_clock::now();
-    deleteEdge(1,5,g);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
-/*
-    cout << "DFS:\n";
-    auto t1_a = high_resolution_clock::now();
-    dfs(g, 1);
-    auto t2_a = high_resolution_clock::now();
-    auto duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
+    vector<pair<int, Vertex>> Dijkstra = dijkstra(g,1); //Here we get the minimum distances from certain node to other ones using Dijkstra's algorithm
 
-    cout << "BFS:\n";
-    t1_a = high_resolution_clock::now();
-    bfs(g, 1);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
+    vector<vector<int>> FloydWarhsall = floydWarshall(g); //Here we get the minimum distances from all nodes to other ones using Floyd-Warshall's algorithm
 
-    cout << "Prim:\n";
-    t1_a = high_resolution_clock::now();
-    prim(g, 1);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
-
-    cout << "Kruskal:\n";
-    t1_a = high_resolution_clock::now();
-    kruskal(g);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
-
-    cout << "Dijkstra:\n";
-    t1_a = high_resolution_clock::now();
-    dijkstra(g,1);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
-
-    cout << "Floyd-Warshall:\n";
-    t1_a = high_resolution_clock::now();
-    floydWarshall(g);
-    t2_a = high_resolution_clock::now();
-    duration_a = duration_cast<microseconds>( t2_a - t1_a ).count();
-    cout << "Duration = " << duration_a << " micros\n";
-
-*/
     return 0;
 }
